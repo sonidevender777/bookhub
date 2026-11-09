@@ -6,12 +6,12 @@ const seedAdmin = async () => {
   if (!config.mongoUri) throw new Error('MONGODB_URI is required before admin data can be seeded.');
   await mongoose.connect(config.mongoUri);
 
-  const previousEmail = 'owner@bookhub.test';
-  const email = 'devendersoni@gmail.com';
-  const password = 'Devender123';
-  const existing = await User.findOne({ email: { $in: [email, previousEmail] } }).select('+password');
+  const email = process.env.SEED_ADMIN_EMAIL || 'owner@bookhub.test';
+  const password = process.env.SEED_ADMIN_PASSWORD || 'OwnerPass123';
+  const fullName = process.env.SEED_ADMIN_NAME || 'BookHub Owner';
+  const existing = await User.findOne({ email }).select('+password');
   if (existing) {
-    existing.fullName = 'Devender Soni';
+    existing.fullName = fullName;
     existing.email = email;
     existing.password = password;
     existing.role = 'owner';
@@ -22,7 +22,7 @@ const seedAdmin = async () => {
   }
 
   await User.create({
-    fullName: 'Devender Soni',
+    fullName,
     email,
     password,
     role: 'owner',
